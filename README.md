@@ -12,3 +12,9 @@ Anyway, since I'm trying to flex my coding skills right now, I wrote a Python sc
 EAS ENDEC.
 
 [YouTube demo!](https://www.youtube.com/watch?v=OVxHkMDX2F8)
+
+# Important Note
+
+Please please please please PLEASE use this responsibly.  Did you just buy an old ENDEC on eBay and want to put it through its paces?  This is the script for you!
+
+Don't use this to hack / exploit anything.  I made this for funsies; please use it accordingly.
