@@ -17,4 +17,4 @@ EAS ENDEC.
 
 Please please please please PLEASE use this responsibly.  Did you just buy an old ENDEC on eBay and want to put it through its paces?  This is the script for you!
 
-Don't use this to hack / exploit anything.  I made this for funsies; please use it accordingly.
+Don't use this to hack / exploit anything.  I made this for funsies in a few hours; please use it accordingly.
