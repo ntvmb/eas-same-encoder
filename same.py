@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import numpy as np
 from scipy.io import wavfile
 import random
@@ -10,6 +11,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--playaudiolive", "-pal", nargs='?', default=-1)
 parser.add_argument("--code", "-c", nargs='?', default="none")
+parser.add_argument("--output", "-o", nargs='?', default="same.wav")
 args = parser.parse_args()
 
 
@@ -129,10 +131,10 @@ sameCompatibleTimestamp = datetime.datetime.now().strftime("%j%H%M")
 # known good
 # OH SHIT it's all time-dependent
 # which i can now do since the time works on the box
-#code = "ZCZC-PEP-EAN-000000+0400-" + sameCompatibleTimestamp + "-SCIENCE -"  # nuclear armageddon (or some other form of "we are all likely to die")
+# code = f"ZCZC-PEP-EAN-000000+0400-{sameCompatibleTimestamp}-SCIENCE -"  # nuclear armageddon (or some other form of "we are all likely to die")
 # code = "ZCZC-PEP-EAT-000000+0400-" + sameCompatibleTimestamp + "-SCIENCE -"  # nuclear armageddon (or some other form of "we are all likely to die")
 # code = "ZCZC-PEP-EAT-000000+0400-2142350-SCIENCE -"  # lol jk no nuclear armageddon
-code = "ZCZC-WXR-TOR-024031+0030-" + sameCompatibleTimestamp + "-SCIENCE -"  # tornado warning, silver spring, md
+# code = "ZCZC-WXR-TOR-024031+0030-" + sameCompatibleTimestamp + "-SCIENCE -"  # tornado warning, silver spring, md
 # code = "ZCZC-WXR-SVR-024031+0030-2142200-SCIENCE -"  # severe thunderstorm warning, silver spring, md
 # code = "ZCZC-WXR-EVI-024031+0030-" + sameCompatibleTimestamp + "-SCIENCE -"  # evacuation immediate!!, silver spring, md
 # code = "ZCZC-WXR-FFW-024031+0030-2150021-SCIENCE -"
@@ -180,10 +182,10 @@ signal *= 32767
 
 signal = np.int16(signal)
 
-wavfile.write(str("same.wav"), fs, signal)
+wavfile.write(str(args.output), fs, signal)
 
 
 if args.playaudiolive == "1":
-	subprocess.call("afplay same.wav", shell=True)
+	subprocess.call(["aplay", args.output])
 
 
