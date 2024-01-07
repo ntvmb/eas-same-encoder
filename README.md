@@ -5,7 +5,9 @@ Note: Wrapper requires the external module `addfips`. Install it by using `pip3 
 
 [Here's a quick background on how EAS SAME headers work.](https://www.youtube.com/watch?v=Z5o1sfXXf9E)
 
-During the late 90's / early 2000's, this is a device that would sit in the headend room of TV / FM / AM stations, listen for EAS SAME signals on neighboring
+This tool was built primarily to test EAS ENDECs.
+
+An EAS ENDE is a device that would sit in the headend room of TV / FM / AM stations, listen for EAS SAME signals on neighboring
 stations, and, if the specified information matched the predefined filters, rebroadcast the emergency message on its local station.
 
 [YouTube demo!](https://www.youtube.com/watch?v=OVxHkMDX2F8)
