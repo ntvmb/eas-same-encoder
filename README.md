@@ -1,13 +1,15 @@
 # Emergency Alert System (EAS) Specific Area Message Encoding (SAME) Encoder
 
-Encode textual SAME headers to audio.
+(original: https://github.com/nicksmadscience/eas-same-encoder)
+
+Create SAME headers and encode them to audio.
 Note: Wrapper requires the external module `addfips`. Install it by using `pip3 install addfips` if you haven't already.
 
 [Here's a quick background on how EAS SAME headers work.](https://www.youtube.com/watch?v=Z5o1sfXXf9E)
 
 This tool was built primarily to test EAS ENDECs.
 
-An EAS ENDE is a device that would sit in the headend room of TV / FM / AM stations, listen for EAS SAME signals on neighboring
+An EAS ENDEC is a device that would sit in the headend room of TV / FM / AM stations, listen for EAS SAME signals on neighboring
 stations, and, if the specified information matched the predefined filters, rebroadcast the emergency message on its local station.
 
 [YouTube demo!](https://www.youtube.com/watch?v=OVxHkMDX2F8)
