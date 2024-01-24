@@ -124,7 +124,7 @@ def main():
                     match partial:
                         case "0" | "all" | "entire":
                             code_temp.write("0")
-                        case "1" |"northwest" | "nw":
+                        case "1" | "northwest" | "nw":
                             code_temp.write("1")
                         case "2" | "north-central" | "nc":
                             code_temp.write("2")
@@ -213,9 +213,12 @@ def main():
                 continue
             break
     while True:
-        sender = input("Enter the sender name. (must be EXACTLY 8 characters; you can use spaces to fill the field if necessary) ")
-        if len(sender) != 8:
-            print("Sender name must be exactly 8 characters long.")
+        sender = input("Enter the sender name. (must have at most 8 characters) ")
+        if not sender:
+            print("Sender name cannot be blank.")
+            continue
+        if len(sender) > 8:
+            print("Sender name cannot have more than 8 characters.")
             continue
         if sender.find("-") + 1:
             print("Sender name cannot have dashes. It is common practice to use / in place of -.")
