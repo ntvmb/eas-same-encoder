@@ -1,10 +1,23 @@
 import datetime
 import io
 import subprocess
+import addfips
 from pathlib import Path
 code_temp = io.StringIO("ZCZC-")
-events = ["ADR", "AVA", "AVW", "BLU", "BZW", "CAE", "CDW", "CEM", "CFA", "CFW", "DMO", "DSW", "EAN", "EAT", "EHW", "EQW", "EVI", "EWW", "FFA", "FFS", "FFW", "FLA", "FLS", "FLW", "FRW", "FSW", "FZW", "HLS", "HMW", "HUA", "HUW", "HWA", "HWW", "LAE", "LEW", "NAT", "NIC", "NMN", "NPT", "NST", "NUW", "RHW", "RFW", "RMT", "RWT", "SMW", "SPS", "SPW", "SQW", "SSA", "SSW", "SVA", "SVR", "SVS", "TOA", "TOE", "TOR", "TRA", "TRW", "TSA", "TSW", "VOW", "WSA", "WSW", "BHW", "BWW", "CHW", "CWW", "DBA", "DBW", "DEW", "EVA", "FCW", "IBW", "IFW", "LSW", "POS", "WFA", "WFW"]
+events = [
+    "ADR", "AVA", "AVW", "BLU", "BZW", "CAE", "CDW", "CEM", "CFA", "CFW",
+    "DMO", "DSW", "EAN", "EAT", "EHW", "EQW", "EVI", "EWW", "FFA", "FFS",
+    "FFW", "FLA", "FLS", "FLW", "FRW", "FSW", "FZW", "HLS", "HMW", "HUA",
+    "HUW", "HWA", "HWW", "LAE", "LEW", "NAT", "NIC", "NMN", "NPT", "NST",
+    "NUW", "RHW", "RFW", "RMT", "RWT", "SMW", "SPS", "SPW", "SQW", "SSA",
+    "SSW", "SVA", "SVR", "SVS", "TOA", "TOE", "TOR", "TRA", "TRW", "TSA",
+    "TSW", "VOW", "WSA", "WSW", "BHW", "BWW", "CHW", "CWW", "DBA", "DBW",
+    "DEW", "EVA", "FCW", "IBW", "IFW", "LSW", "POS", "WFA", "WFW"
+    ]
+
+
 def main():
+    fips_adder = addfips.AddFIPS()
     code_temp.seek(5)
     print("Python Specific Area Message Encoding (SAME) header encoder")
     waiting = True
@@ -34,10 +47,13 @@ def main():
     code_temp.write(to_write)
     waiting = True
     while waiting:
-        event = input("Enter event code. For a list of event codes type l. ")
+        event = input(
+            "Enter event code. For a list of event codes type l. ").upper()
         if event not in events:
             if event == "l":
-                print("""0 - Administrative Message (ADR)       1 - Avalanche Watch (AVA)
+                print(
+                    """\
+0 - Administrative Message (ADR)       1 - Avalanche Watch (AVA)
 2 - Avalanche Warning (AVW)            3 - Blue Alert (BLU)
 4 - Blizzard Warning (BZW)             5 - Child Abduction Emergency (CAE)
 6 - Civil Danger Warning (CDW)         7 - Civil Emergency Message (CEM)
@@ -103,14 +119,15 @@ def main():
             else:
                 do_area = True
             if do_area:
-                area = input("Enter county name or equivalent, or independent city. To select the entire state, leave this blank. ").title()
+                area = input(
+                    "Enter county name or equivalent, or independent city. To \
+select the entire state, leave this blank. ").title()
                 if area:
-                    r = subprocess.run(["python3", "-m", "addfips", "-s", "state", "-c", "county"],input=f"state,county\n{state},{area}".encode("UTF-8"),capture_output=True)
+                    fips = fips_adder.get_county_fips(area, state)
                 else:
-                    r = subprocess.run(["python3", "-m", "addfips", "-s", "state"],input=f"state\n{state}".encode("UTF-8"),capture_output=True)
+                    fips = fips_adder.get_state_fips(state)
                     area = 0
-                fips = r.stdout.decode("UTF-8").splitlines()[1].split(",")[0]
-                if not fips:
+                if fips is None:
                     print("Area not found.")
                     continue
                 if area:
@@ -120,7 +137,10 @@ def main():
                     code_temp.write(f"0{fips}000")
             if area:
                 while True:
-                    partial = input("Area is partially affected? (0 - entire area, 1 - northwest, 2 - north-central, 3 - northeast, 4 - west-central, 5 - central, 6 - east-central, 7 - southwest, 8 - south-central, 9 - southeast) ").lower()
+                    partial = input(
+                        "Area is partially affected? (0 - entire area, 1 - \
+northwest, 2 - north-central, 3 - northeast, 4 - west-central, 5 - central, 6 \
+- east-central, 7 - southwest, 8 - south-central, 9 - southeast) ").lower()
                     match partial:
                         case "0" | "all" | "entire":
                             code_temp.write("0")
@@ -160,7 +180,8 @@ def main():
                     break
     while True:
         try:
-            hours = int(input("For how many hours will this event last? (max 99) "))
+            hours = int(input(
+                "For how many hours will this event last? (max 99) "))
         except ValueError:
             print("That's not an integer.")
             continue
@@ -182,12 +203,14 @@ def main():
         break
     ans = input("Use current time as the issuance time? (yes or no) ")
     if ans in ["yes", "y"]:
-        code_temp.write(f"{datetime.datetime.now(datetime.UTC).strftime('%j%H%M')}-")
+        code_temp.write(
+            f"{datetime.datetime.now(datetime.UTC).strftime('%j%H%M')}-")
     else:
         print("Time zone is UTC.")
         while True:
             try:
-                month = int(input("Enter the month of issuance (as a number) "))
+                month = int(input(
+                    "Enter the month of issuance (as a number) "))
                 if month < 1 or month > 12:
                     print("Invalid month.")
                     continue
@@ -207,21 +230,21 @@ def main():
                 print("That's not an integer.")
                 continue
             try:
-                code_temp.write(f"{datetime.datetime(datetime.datetime.now().year, month, day, hour, minute).strftime('%j%H%M')}-")
+                code_temp.write(
+                    f"{datetime.datetime(datetime.datetime.now().year, month, day, hour, minute).strftime('%j%H%M')}-")
             except ValueError:
                 print("Invalid date entered.")
                 continue
             break
     while True:
-        sender = input("Enter the sender name. (must have at most 8 characters) ")
-        if not sender:
-            print("Sender name cannot be blank.")
-            continue
+        sender = input("Enter the sender name. (no more than 8 characters) ")
         if len(sender) > 8:
-            print("Sender name cannot have more than 8 characters.")
+            print("Sender name must be no more than 8 characters long.")
             continue
         if sender.find("-") + 1:
-            print("Sender name cannot have dashes. It is common practice to use / in place of -.")
+            print(
+                "Sender name cannot have dashes. It is common practice to use \
+/ in place of -.")
             continue
         break
     code_temp.write(f"{sender}-")
@@ -232,6 +255,7 @@ def main():
         return 0
     else:
         return 1
+
 
 if __name__ == "__main__":
     while main():
