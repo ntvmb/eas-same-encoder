@@ -48,9 +48,9 @@ def main():
     waiting = True
     while waiting:
         event = input(
-            "Enter event code. For a list of event codes type l. ").upper()
+            "Enter event code. For a list of event codes type L. ").upper()
         if event not in events:
-            if event == "l":
+            if event == "L":
                 print(
                     """\
 0 - Administrative Message (ADR)       1 - Avalanche Watch (AVA)
