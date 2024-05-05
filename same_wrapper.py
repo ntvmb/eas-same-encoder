@@ -23,7 +23,7 @@ def main():
     waiting = True
     while waiting:
         print("""Select originator
-1 - Primary Entry Point System (PEP)
+1 - United States Government (PEP)
 2 - Civil Authorities (CIV)
 3 - National Weather Service (WXR)
 4 - EAS Participant (EAS)
@@ -72,7 +72,8 @@ def main():
 32 - High Wind Warning (HWW)           33 - Local Area Emergency (LAE)
 34 - Law Enforcement Warning (LEW)     35 - National Audible Test (NAT)
 36 - National Information Center (NIC) 37 - Network Notification Message (NMN)
-38 - National Periodic Test (NPT)      39 - National Silent Test (NST)
+38 - Nationwide Test of the Emergency  39 - National Silent Test (NST)
+     Alert System (NPT)
 40 - Nuclear Power Plant Warning (NUW) 41 - Radiological Hazard Warning (RHW)
 42 - Red Flag Warning (RFW)            43 - Required Monthly Test (RMT)
 44 - Required Weekly Test (RWT)        45 - Special Marine Warning (SMW)
