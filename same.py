@@ -8,7 +8,7 @@ import datetime  # EAS alerts are heavily dependent on timestamps so this makes 
 import argparse
 
 ######## CONFIG / constants ########
-markBitFrequency = 2083 + 1/3
+markBitFrequency = 2083 + 1 / 3
 spaceBitFrequency = 1562.5
 fs = 43750
 
@@ -18,7 +18,7 @@ def markBit():
 
     # f = 2083.33333
     f = markBitFrequency
-    t = 1.0 / (520 + 5/6)
+    t = 1.0 / (520 + 5 / 6)
 
     samples = np.arange(t * fs) / fs
 
@@ -31,7 +31,7 @@ def spaceBit():
 
     # f = 1562.5
     f = spaceBitFrequency
-    t = 1.0 / (520 + 5/6)
+    t = 1.0 / (520 + 5 / 6)
 
     samples = np.arange(t * fs) / fs
 
@@ -81,6 +81,7 @@ def preamble():
 
     return byte_data
 
+
 # control string
 # code = "ZCZC-EAS-RMT-011001+0100-2142200-KMMS FM -"
 # useful FIPS codes
@@ -91,13 +92,14 @@ def preamble():
 # sameCompatibleTimestamp = datetime.datetime.now().strftime("%j%H%M")
 
 
-def main():
-    # parse command-line arguments
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--playaudiolive", "-pal", nargs='?', default=0)
-    parser.add_argument("--code", "-c", nargs='?', default="none")
-    parser.add_argument("--output", "-o", nargs='?', default="same.wav")
-    args = parser.parse_args()
+def main(args: argparse.Namespace = None):
+    if args is None:
+        # parse command-line arguments
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--playaudiolive", "-pal", nargs="?", default=0)
+        parser.add_argument("--code", "-c", nargs="?", default="none")
+        parser.add_argument("--output", "-o", nargs="?", default="same.wav")
+        args = parser.parse_args()
     code = args.code
     samples = np.zeros(0)
     signal = np.zeros(20000)

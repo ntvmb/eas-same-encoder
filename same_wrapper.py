@@ -1,9 +1,12 @@
 import datetime
 import io
-import subprocess
 import addfips
+import same
 from pathlib import Path
+from argparse import Namespace
+
 code_temp = io.StringIO("ZCZC-")
+# fmt: off
 events = [
     "ADR", "AVA", "AVW", "BLU", "BZW", "CAE", "CDW", "CEM", "CFA", "CFW",
     "DMO", "DSW", "EAN", "EAT", "EHW", "EQW", "EVI", "EWW", "FFA", "FFS",
@@ -12,8 +15,9 @@ events = [
     "NUW", "RHW", "RFW", "RMT", "RWT", "SMW", "SPS", "SPW", "SQW", "SSA",
     "SSW", "SVA", "SVR", "SVS", "TOA", "TOE", "TOR", "TRA", "TRW", "TSA",
     "TSW", "VOW", "WSA", "WSW", "BHW", "BWW", "CHW", "CWW", "DBA", "DBW",
-    "DEW", "EVA", "FCW", "IBW", "IFW", "LSW", "POS", "WFA", "WFW"
-    ]
+    "DEW", "EVA", "FCW", "IBW", "IFW", "LSW", "POS", "WFA", "WFW",
+]
+# fmt: on
 
 
 def main():
@@ -22,13 +26,15 @@ def main():
     print("Python Specific Area Message Encoding (SAME) header encoder")
     waiting = True
     while waiting:
-        print("""Select originator
+        print(
+            """Select originator
 1 - United States Government (PEP)
 2 - Civil Authorities (CIV)
 3 - National Weather Service (WXR)
 4 - EAS Participant (EAS)
-5 - EAN Network (EAN; deprecated)""")
-        match input(''):
+5 - EAN Network (EAN; deprecated)"""
+        )
+        match input(""):
             case "1" | "PEP":
                 to_write = "PEP-"
             case "2" | "CIV":
@@ -47,8 +53,12 @@ def main():
     code_temp.write(to_write)
     waiting = True
     while waiting:
-        event = input(
-            "Enter event code. For a list of event codes type L. ").upper()
+        # fmt: off
+        event = (
+            input("Enter event code. For a list of event codes type L. ")
+            .upper()
+        )
+        # fmt: on
         if event not in events:
             if event == "L":
                 print(
@@ -93,7 +103,8 @@ def main():
 72 - Food Contamination Warning (FCW)  73 - Iceberg Warning (IBW)
 74 - Industrial Fire Warning (IFW)     75 - Landslide Warning (LSW)
 76 - Power Outage Statement (POS)      77 - Wild Fire Watch (WFA)
-78 - Wild Fire Warning (WFW)""")
+78 - Wild Fire Warning (WFW)"""
+                )
             else:
                 try:
                     e_num = int(event)
@@ -122,7 +133,8 @@ def main():
             if do_area:
                 area = input(
                     "Enter county name or equivalent, or independent city. To \
-select the entire state, leave this blank. ").title()
+select the entire state, leave this blank. "
+                ).title()
                 if area:
                     fips = fips_adder.get_county_fips(area, state)
                 else:
@@ -141,7 +153,8 @@ select the entire state, leave this blank. ").title()
                     partial = input(
                         "Area is partially affected? (0 - entire area, 1 - \
 northwest, 2 - north-central, 3 - northeast, 4 - west-central, 5 - central, 6 \
-- east-central, 7 - southwest, 8 - south-central, 9 - southeast) ").lower()
+- east-central, 7 - southwest, 8 - south-central, 9 - southeast) "
+                    ).lower()
                     match partial:
                         case "0" | "all" | "entire":
                             code_temp.write("0")
@@ -181,8 +194,7 @@ northwest, 2 - north-central, 3 - northeast, 4 - west-central, 5 - central, 6 \
                     break
     while True:
         try:
-            hours = int(input(
-                "For how many hours will this event last? (max 99) "))
+            hours = int(input("For how many hours will this event last? (max 99) "))
         except ValueError:
             print("That's not an integer.")
             continue
@@ -204,14 +216,12 @@ northwest, 2 - north-central, 3 - northeast, 4 - west-central, 5 - central, 6 \
         break
     ans = input("Use current time as the issuance time? (yes or no) ")
     if ans in ["yes", "y"]:
-        code_temp.write(
-            f"{datetime.datetime.now(datetime.UTC).strftime('%j%H%M')}-")
+        code_temp.write(f"{datetime.datetime.now(datetime.UTC).strftime('%j%H%M')}-")
     else:
         print("Time zone is UTC.")
         while True:
             try:
-                month = int(input(
-                    "Enter the month of issuance (as a number) "))
+                month = int(input("Enter the month of issuance (as a number) "))
                 if month < 1 or month > 12:
                     print("Invalid month.")
                     continue
@@ -232,7 +242,8 @@ northwest, 2 - north-central, 3 - northeast, 4 - west-central, 5 - central, 6 \
                 continue
             try:
                 code_temp.write(
-                    f"{datetime.datetime(datetime.datetime.now().year, month, day, hour, minute).strftime('%j%H%M')}-")
+                    f"{datetime.datetime(datetime.datetime.now().year, month, day, hour, minute).strftime('%j%H%M')}-"
+                )
             except ValueError:
                 print("Invalid date entered.")
                 continue
@@ -245,7 +256,8 @@ northwest, 2 - north-central, 3 - northeast, 4 - west-central, 5 - central, 6 \
         if sender.find("-") + 1:
             print(
                 "Sender name cannot have dashes. It is common practice to use \
-/ in place of -.")
+/ in place of -."
+            )
             continue
         break
     code_temp.write(f"{sender}-")
@@ -272,4 +284,4 @@ if __name__ == "__main__":
             outpath = str(Path(filename).with_suffix(".wav"))
         else:
             outpath = "same.wav"
-        subprocess.run(["python3", "same.py", "-o", outpath, "-c", code])
+        same.main(Namespace(playaudiolive=0, code=code, output=outpath))
