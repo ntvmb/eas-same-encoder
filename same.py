@@ -8,34 +8,31 @@ import datetime  # EAS alerts are heavily dependent on timestamps so this makes 
 import argparse
 
 ######## CONFIG / constants ########
-markBitFrequency = 2083 + 1 / 3
+# fmt: off
+# markBitFrequency = 2083 + 1/3
+markBitFrequency = 6250 / 3
 spaceBitFrequency = 1562.5
-fs = 43750
+sample_rate = 43750
+# fmt: on
 
 
 def markBit():
-    global markBitFrequency
-
-    # f = 2083.33333
-    f = markBitFrequency
-    t = 1.0 / (520 + 5 / 6)
-
-    samples = np.arange(t * fs) / fs
-
-    roffle = np.sin(2 * np.pi * f * samples)
+    # fmt: off
+    # time = 1.0 / (520 + 5/6)
+    time = 6 / 3125  # seconds
+    samples = np.arange(time * sample_rate) / sample_rate
+    roffle = np.sin(2 * np.pi * markBitFrequency * samples)
+    # fmt: on
     return roffle * 0.8
 
 
 def spaceBit():
-    global spaceBitFrequency
-
-    # f = 1562.5
-    f = spaceBitFrequency
-    t = 1.0 / (520 + 5 / 6)
-
-    samples = np.arange(t * fs) / fs
-
-    return np.sin(2 * np.pi * f * samples)
+    # fmt: off
+    # time = 1.0 / (520 + 5/6)
+    time = 6 / 3125
+    samples = np.arange(time * sample_rate) / sample_rate
+    # fmt: on
+    return np.sin(2 * np.pi * spaceBitFrequency * samples)
 
 
 def byte(the_byte):
@@ -96,9 +93,9 @@ def main(args: argparse.Namespace = None):
     if args is None:
         # parse command-line arguments
         parser = argparse.ArgumentParser()
-        parser.add_argument("--playaudiolive", "-pal", nargs="?", default=0)
-        parser.add_argument("--code", "-c", nargs="?", default="none")
-        parser.add_argument("--output", "-o", nargs="?", default="same.wav")
+        parser.add_argument("--playaudiolive", "-pal", nargs=1, action="store_true")
+        parser.add_argument("--code", "-c", nargs=1, required=True)
+        parser.add_argument("--output", "-o", nargs=1, default="same.wav")
         args = parser.parse_args()
     code = args.code
     samples = np.zeros(0)
@@ -131,11 +128,11 @@ def main(args: argparse.Namespace = None):
         # wait the requisite one second
         signal = np.append(signal, np.zeros(43750))
 
+    # Convert the signal from floating-point values to 16-bit samples
     signal *= 32767
-
     signal = np.int16(signal)
 
-    wavfile.write(str(args.output), fs, signal)
+    wavfile.write(str(args.output), sample_rate, signal)
 
     if args.playaudiolive:
         subprocess.call(["aplay", args.output])
