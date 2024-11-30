@@ -93,9 +93,9 @@ def main(args: argparse.Namespace = None):
     if args is None:
         # parse command-line arguments
         parser = argparse.ArgumentParser()
-        parser.add_argument("--playaudiolive", "-pal", nargs=1, action="store_true")
-        parser.add_argument("--code", "-c", nargs=1, required=True)
-        parser.add_argument("--output", "-o", nargs=1, default="same.wav")
+        parser.add_argument("--playaudiolive", "-pal", action="store_true")
+        parser.add_argument("--code", "-c", required=True)
+        parser.add_argument("--output", "-o", default="same.wav")
         args = parser.parse_args()
     code = args.code
     samples = np.zeros(0)
